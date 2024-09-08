@@ -207,6 +207,10 @@
     }
   },
   "plugins": {
+    "ad-speedup": {
+      "description": "Se um anúncio for reproduzido, ele será silenciado o áudio e será definido a velocidade de reprodução para 16x",
+      "name": "Acelerar os anúncios"
+    },
     "adblocker": {
       "description": "Bloquear todos os anúncios e rastreamento automaticamente",
       "menu": {
@@ -222,9 +226,9 @@
       "description": "Aplica um tema dinâmico e efeitos visuais com base na paleta de cores do álbum",
       "menu": {
         "color-mix-ratio": {
-          "label": "Rácio de mistura das cores",
+          "label": "Relação de mistura de cores",
           "submenu": {
-            "percent": "Proporção"
+            "percent": "{{ratio}}%"
           }
         }
       },
@@ -410,6 +414,21 @@
       "description": "Baixa MP3 / fonte de áudio diretamente da interface",
       "menu": {
         "choose-download-folder": "Escolha a pasta de download",
+        "download-finish-settings": {
+          "label": "Baixar ao terminar",
+          "prompt": {
+            "last-percent": "Depois de x por cento",
+            "last-seconds": "Últimos x segundos",
+            "title": "Configurar quando baixar"
+          },
+          "submenu": {
+            "advanced": "Avançado",
+            "enabled": "Ativado",
+            "mode": "Modo de tempo",
+            "percent": "Porcentagem",
+            "seconds": "Segundos"
+          }
+        },
         "download-playlist": "Baixar lista de reprodução",
         "presets": "Predefinições",
         "skip-existing": "Ignorar arquivos existentes"
@@ -482,15 +501,15 @@
         "add-song-failed": "Falha ao adicionar canção",
         "closed": "Música Juntos encerrado",
         "disconnected": "Música Juntos foi desconectado",
-        "host-failed": "Falha ao hospedar o Música Juntos",
+        "host-failed": "Falha ao hospedar o Music Together",
         "id-copied": "ID de anfitrião copiado para a área de transferência",
         "id-copy-failed": "Falha ao copiar o ID de anfitrião para a área de transferência",
-        "join-failed": "Falha ao entrar em Música Juntos",
-        "joined": "Entrou em Música Juntos",
-        "permission-changed": "A permissão do Música Juntos foi alterada para \"{{permission}}\"",
+        "join-failed": "Falha ao entrar em Music Together",
+        "joined": "Entrou em Music Together",
+        "permission-changed": "A permissão do Music Together foi alterada para \"{{permission}}\"",
         "remove-song-failed": "Falha ao remover música",
-        "user-connected": "{{name}} entrou em Música Juntos",
-        "user-disconnected": "{{name}} saiu do Música Juntos"
+        "user-connected": "{{name}} entrou em Music Together",
+        "user-disconnected": "{{name}} saiu do Music Together"
       }
     },
     "navigation": {
@@ -648,6 +667,59 @@
     "sponsorblock": {
       "description": "Ignora automaticamente partes não musicais, como introdução/final ou partes de videoclipes onde a música não está tocando",
       "name": "SponsorBlock (bloqueador de patrocínios)"
+    },
+    "synced-lyrics": {
+      "description": "Fornece letras sincronizadas de músicas, utilizando fornecedores como o LRClib.",
+      "errors": {
+        "fetch": "⚠️ - Ocorreu um erro ao obter as letras da música. Por favor, tenta novamente mais tarde.",
+        "not-found": "⚠️ - Não foram encontradas letras para esta música."
+      },
+      "menu": {
+        "default-text-string": {
+          "label": "Caractere padrão entre as letras",
+          "tooltip": "Escolha o caractere padrão para usar no espaço entre as letras"
+        },
+        "line-effect": {
+          "label": "Efeito de linha",
+          "submenu": {
+            "focus": {
+              "label": "Foco",
+              "tooltip": "Deixe apenas a linha atual branca"
+            },
+            "offset": {
+              "label": "Deslocamento",
+              "tooltip": "Desloque a linha atual para a direita"
+            },
+            "scale": {
+              "label": "Escala",
+              "tooltip": "Escalar a linha atual"
+            }
+          },
+          "tooltip": "Escolha o efeito a ser aplicado à linha atual"
+        },
+        "precise-timing": {
+          "label": "Sincronize perfeitamente as letras",
+          "tooltip": "Calcule até o milissegundo a exibição da próxima linha (pode ter um pequeno impacto no desempenho)"
+        },
+        "show-lyrics-even-if-inexact": {
+          "label": "Mostrar letras mesmo que imprecisas",
+          "tooltip": "Se a música não for encontrada, o plugin tenta novamente com uma consulta de pesquisa diferente.\nO resultado da segunda tentativa pode não ser exato."
+        },
+        "show-time-codes": {
+          "label": "Mostrar códigos de tempo",
+          "tooltip": "Mostrar os códigos de tempo ao lado das letras"
+        }
+      },
+      "name": "Letras Sincronizadas",
+      "refetch-btn": {
+        "fetching": "Buscando...",
+        "normal": "Buscar as letras novamente"
+      },
+      "warnings": {
+        "duration-mismatch": "⚠️ - As letras da música pode estar dessincronizada devido a um erro de duração.",
+        "inexact": "⚠️ - As letras desta música podem não ser exactas.",
+        "instrumental": "⚠️ - Esta é uma música instrumental."
+      }
     },
     "taskbar-mediacontrol": {
       "description": "Controle a reprodução na barra de tarefas do Windows",

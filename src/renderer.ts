@@ -35,7 +35,7 @@ async function listenForApiLoad() {
 }
 
 interface YouTubeMusicAppElement extends HTMLElement {
-  navigate_(page: string): void;
+  navigate(page: string): void;
 }
 
 async function onApiLoaded() {
@@ -167,15 +167,24 @@ async function onApiLoaded() {
   if (startingPage && startingPages[startingPage]) {
     document
       .querySelector<YouTubeMusicAppElement>('ytmusic-app')
-      ?.navigate_(startingPages[startingPage]);
+      ?.navigate(startingPages[startingPage]);
   }
 
   // Remove upgrade button
   if (window.mainConfig.get('options.removeUpgradeButton')) {
+    const itemsSelector = 'ytmusic-guide-section-renderer #items';
+    let selector = 'ytmusic-guide-entry-renderer:last-child';
+
+    const upgradeBtnIcon = document.querySelector<SVGGElement>('iron-iconset-svg[name="yt-sys-icons"] #youtube_music_monochrome');
+    if (upgradeBtnIcon) {
+      const path = upgradeBtnIcon.firstChild as SVGPathElement;
+      const data = path.getAttribute('d')!.substring(0, 15);
+      selector = `ytmusic-guide-entry-renderer:has(> tp-yt-paper-item > yt-icon path[d^="${data}"])`;
+    }
+
     const styles = document.createElement('style');
-    styles.innerHTML = `ytmusic-guide-section-renderer #items ytmusic-guide-entry-renderer:last-child {
-      display: none;
-    }`;
+    styles.textContent = `${itemsSelector} ${selector} { display: none; }`;
+
     document.head.appendChild(styles);
   }
 
