@@ -3,7 +3,7 @@ import prompt from 'custom-electron-prompt';
 import { t } from '@/i18n';
 import promptOptions from '@/providers/prompt-options';
 
-import { APIServerConfig, defaultAPIServerConfig } from './config';
+import { type APIServerConfig, defaultAPIServerConfig } from './config';
 
 import type { MenuContext } from '@/types/contexts';
 import type { MenuTemplate } from '@/menu';

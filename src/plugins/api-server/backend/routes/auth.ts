@@ -2,6 +2,8 @@ import { createRoute, z } from '@hono/zod-openapi';
 import { dialog } from 'electron';
 import { sign } from 'hono/jwt';
 
+import { getConnInfo } from '@hono/node-server/conninfo';
+
 import { t } from '@/i18n';
 
 import { APIServerConfig } from '../../config';
@@ -19,7 +21,7 @@ const routes = {
     request: {
       params: z.object({
         id: z.string(),
-      })
+      }),
     },
     responses: {
       200: {
@@ -39,21 +41,29 @@ const routes = {
   }),
 };
 
-export const register = (app: HonoApp, { getConfig, setConfig }: BackendContext<APIServerConfig>) => {
+export const register = (
+  app: HonoApp,
+  { getConfig, setConfig }: BackendContext<APIServerConfig>,
+) => {
   app.openapi(routes.request, async (ctx) => {
     const config = await getConfig();
     const { id } = ctx.req.param();
-
-    console.log("Auth Strategy", config.authStrategy);
 
     if (config.authorizedClients.includes(id)) {
       // SKIP CHECK
     } else if (config.authStrategy === 'AUTH_AT_FIRST') {
       const result = await dialog.showMessageBox({
-        title: t('plugins.api-server.prompt.request.title'),
-        message: t('plugins.api-server.prompt.request.message'),
-        buttons: [t('plugins.api-server.prompt.request.ok'), t('plugins.api-server.prompt.request.cancel')],
+        title: t('plugins.api-server.dialog.request.title'),
+        message: t('plugins.api-server.dialog.request.message', {
+          origin: getConnInfo(ctx).remote.address,
+          id,
+        }),
+        buttons: [
+          t('plugins.api-server.dialog.request.buttons.allow'),
+          t('plugins.api-server.dialog.request.deny'),
+        ],
         defaultId: 1,
+        cancelId: 1,
       });
 
       if (result.response === 1) {
@@ -65,9 +75,7 @@ export const register = (app: HonoApp, { getConfig, setConfig }: BackendContext<
     }
 
     setConfig({
-      authorizedClients: [
-        ...new Set(config.authorizedClients).add(id)
-      ],
+      authorizedClients: [...config.authorizedClients, id],
     });
 
     const token = await sign(
