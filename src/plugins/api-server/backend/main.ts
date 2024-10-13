@@ -1,5 +1,6 @@
 import { jwt } from 'hono/jwt';
 import { OpenAPIHono as Hono } from '@hono/zod-openapi';
+import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import { serve } from '@hono/node-server';
 
@@ -7,17 +8,16 @@ import registerCallback from '@/providers/song-info';
 import { createBackend } from '@/utils';
 
 import { JWTPayloadSchema } from './scheme';
-import { registerAuth, registerControl, registerWebsocket } from './routes';
+import { registerAuth, registerControl } from './routes';
 
 import type { APIServerConfig } from '../config';
 import type { BackendType } from './types';
-import { ipcMain } from 'electron';
 
 export const backend = createBackend<BackendType, APIServerConfig>({
   async start(ctx) {
     const config = await ctx.getConfig();
 
-    await this.init(ctx);
+    this.init(ctx);
     registerCallback((songInfo) => {
       this.songInfo = songInfo;
     });
@@ -28,7 +28,10 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     this.end();
   },
   onConfigChange(config) {
-    if (this.oldConfig?.hostname === config.hostname && this.oldConfig?.port === config.port) {
+    if (
+      this.oldConfig?.hostname === config.hostname &&
+      this.oldConfig?.port === config.port
+    ) {
       this.oldConfig = config;
       return;
     }
@@ -42,9 +45,8 @@ export const backend = createBackend<BackendType, APIServerConfig>({
   async init(ctx) {
     const config = await ctx.getConfig();
     this.app = new Hono();
-    ctx.setConfig({
-      authorizedClients: []
-    })
+
+    this.app.use('*', cors());
 
     // middlewares
     this.app.use(
@@ -56,10 +58,8 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     this.app.use('/api/*', async (ctx, next) => {
       const result = await JWTPayloadSchema.spa(await ctx.get('jwtPayload'));
 
-      const isAuthorized = result.success && config.authorizedClients.includes(result.data.id);
-
-      console.log(isAuthorized, config.authorizedClients, result.success ?result.data.id: null);
-
+      const isAuthorized =
+        result.success && config.authorizedClients.includes(result.data.id);
       if (!isAuthorized) {
         ctx.status(401);
         return ctx.body('Unauthorized');
@@ -71,13 +71,6 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     // routes
     registerControl(this.app, ctx, () => this.songInfo);
     registerAuth(this.app, ctx);
-
-    if (config.websocket) ipcMain.once("ytmd:player-api-loaded",()=> {
-      ctx.window.webContents.send('ytmd:setup-repeat-changed-listener');
-      ctx.window.webContents.send('ytmd:setup-volume-changed-listener');
-
-      registerWebsocket(ctx)
-    })
 
     // swagger
     this.app.doc('/doc', {

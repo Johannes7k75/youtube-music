@@ -33,16 +33,8 @@ const routes = {
       headers: AuthHeadersSchema,
     },
     responses: {
-      200: {
-        description: 'Success',
-        content: {
-          'application/json': {
-            schema: SongInfoSchema,
-          }
-        },
-      },
       204: {
-        description: 'No song info',
+        description: 'Success',
       },
     },
   }),
@@ -55,16 +47,8 @@ const routes = {
       headers: AuthHeadersSchema,
     },
     responses: {
-      200: {
-        description: 'Success',
-        content: {
-          'application/json': {
-            schema: SongInfoSchema,
-          }
-        },
-      },
       204: {
-        description: 'No song info',
+        description: 'Success',
       },
     },
   }),
@@ -100,7 +84,8 @@ const routes = {
     method: 'post',
     path: `/api/${API_VERSION}/toggle-play`,
     summary: 'Toggle play/pause',
-    description: 'Change the state of the player to play if paused, or pause if playing',
+    description:
+      'Change the state of the player to play if paused, or pause if playing',
     request: {
       headers: AuthHeadersSchema,
     },
@@ -296,7 +281,7 @@ const routes = {
             schema: z.object({
               state: z.boolean(),
             }),
-          }
+          },
         },
       },
     },
@@ -315,7 +300,7 @@ const routes = {
         content: {
           'application/json': {
             schema: z.object({}),
-          }
+          },
         },
       },
       204: {
@@ -337,7 +322,7 @@ const routes = {
         content: {
           'application/json': {
             schema: SongInfoSchema,
-          }
+          },
         },
       },
       204: {
@@ -347,42 +332,24 @@ const routes = {
   }),
 };
 
-export const register = (app: HonoApp, { window }: BackendContext<APIServerConfig>, songInfoGetter: () => SongInfo | undefined) => {
+export const register = (
+  app: HonoApp,
+  { window }: BackendContext<APIServerConfig>,
+  songInfoGetter: () => SongInfo | undefined,
+) => {
   const controller = getSongControls(window);
 
   app.openapi(routes.previous, (ctx) => {
     controller.previous();
 
-
-    ipcMain.once('ytmd:ytmd:video-src-changed', (_, info: SongInfo) => {
-      if (!info) {
-        ctx.status(200);
-        return ctx.body(null);
-      }
-
-      const body = { ...info };
-      delete body.image;
-
-      ctx.status(204);
-      return ctx.json(body satisfies ResponseSongInfo);
-    })
-
+    ctx.status(204);
+    return ctx.body(null);
   });
-  app.openapi(routes.next, (ctx) => {
-    controller.next();
+  app.openapi(routes.previous, (ctx) => {
+    controller.previous();
 
-    ipcMain.once('ytmd:ytmd:video-src-changed', (_, info: SongInfo) => {
-      if (!info) {
-        ctx.status(200);
-        return ctx.body(null);
-      }
-
-      const body = { ...info };
-      delete body.image;
-
-      ctx.status(204);
-      return ctx.json(body satisfies ResponseSongInfo);
-    })
+    ctx.status(204);
+    return ctx.body(null);
   });
   app.openapi(routes.play, (ctx) => {
     controller.play();
@@ -464,9 +431,12 @@ export const register = (app: HonoApp, { window }: BackendContext<APIServerConfi
 
   app.openapi(routes.getFullscreenState, async (ctx) => {
     const stateResponsePromise = new Promise<boolean>((resolve) => {
-      ipcMain.once('ytmd:set-fullscreen', (_, isFullscreen: boolean | undefined) => {
-        return resolve(!!isFullscreen);
-      });
+      ipcMain.once(
+        'ytmd:set-fullscreen',
+        (_, isFullscreen: boolean | undefined) => {
+          return resolve(!!isFullscreen);
+        },
+      );
 
       controller.requestFullscreenInformation();
     });

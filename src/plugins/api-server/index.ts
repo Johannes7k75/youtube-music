@@ -10,9 +10,8 @@ export default createPlugin({
   description: () => t('plugins.api-server.description'),
   restartNeeded: false,
   config: defaultAPIServerConfig,
-  addedVersion: '3.4.X',
+  addedVersion: '3.6.X',
   menu: onMenu,
-
 
   renderer: {
     onPlayerApiReady(api,{setConfig}) {
