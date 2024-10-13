@@ -7,7 +7,6 @@ import { APIServerConfig, defaultAPIServerConfig } from './config';
 
 import type { MenuContext } from '@/types/contexts';
 import type { MenuTemplate } from '@/menu';
-import { unregisterWebsocket } from './backend/routes';
 
 export const onMenu = async ({
   getConfig,
@@ -23,17 +22,20 @@ export const onMenu = async ({
       async click() {
         const config = await getConfig();
 
-        const newHostname = await prompt(
-          {
-            title: t('plugins.api-server.prompt.hostname.title'),
-            label: t('plugins.api-server.prompt.hostname.label'),
-            value: config.hostname,
-            type: 'input',
-            width: 380,
-            ...promptOptions(),
-          },
-          window,
-        ) ?? defaultAPIServerConfig.hostname;
+        const newHostname =
+          (await prompt(
+            {
+              title: t('plugins.api-server.prompt.hostname.title'),
+              label: t('plugins.api-server.prompt.hostname.label'),
+              value: config.hostname,
+              type: 'input',
+              width: 380,
+              ...promptOptions(),
+            },
+            window,
+          )) ??
+          config.hostname ??
+          defaultAPIServerConfig.hostname;
 
         setConfig({ ...config, hostname: newHostname });
       },
@@ -44,18 +46,21 @@ export const onMenu = async ({
       async click() {
         const config = await getConfig();
 
-        const newPort = await prompt(
-          {
-            title: t('plugins.api-server.prompt.port.title'),
-            label: t('plugins.api-server.prompt.port.label'),
-            value: config.port,
-            type: 'counter',
-            counterOptions: { minimum: 0, maximum: 65565, },
-            width: 380,
-            ...promptOptions(),
-          },
-          window,
-        ) ?? defaultAPIServerConfig.port;
+        const newPort =
+          (await prompt(
+            {
+              title: t('plugins.api-server.prompt.port.title'),
+              label: t('plugins.api-server.prompt.port.label'),
+              value: config.port,
+              type: 'counter',
+              counterOptions: { minimum: 0, maximum: 65565 },
+              width: 380,
+              ...promptOptions(),
+            },
+            window,
+          )) ??
+          config.port ??
+          defaultAPIServerConfig.port;
 
         setConfig({ ...config, port: newPort });
       },
@@ -65,7 +70,9 @@ export const onMenu = async ({
       type: 'submenu',
       submenu: [
         {
-          label: t('plugins.api-server.menu.auth-strategy.auth-at-first'),
+          label: t(
+            'plugins.api-server.menu.auth-strategy.submenu.auth-at-first.label',
+          ),
           type: 'radio',
           checked: config.authStrategy === 'AUTH_AT_FIRST',
           click() {
@@ -73,7 +80,7 @@ export const onMenu = async ({
           },
         },
         {
-          label: t('plugins.api-server.menu.auth-strategy.none'),
+          label: t('plugins.api-server.menu.auth-strategy.submenu.none.label'),
           type: 'radio',
           checked: config.authStrategy === 'NONE',
           click() {
@@ -82,45 +89,5 @@ export const onMenu = async ({
         },
       ],
     },
-    {
-      label: "Websocket",
-      type: "submenu",
-      submenu: [
-        {
-          label: "enabled",
-          type: "checkbox",
-          checked: config.websocket,
-          click(box) {
-            if (!box.checked) {
-              unregisterWebsocket()
-            }
-
-            setConfig({ ...config, websocket: !box.checked })
-          }
-        },
-        {
-          label: "Port",
-          type: "normal",
-          async click() {
-            const config = await getConfig();
-
-            const newWebsocketPort = await prompt(
-              {
-                title: "Websocket Port",
-                label: "Port",
-                value: config.websocketPort,
-                type: "counter",
-                counterOptions: { minimum: 0, maximum: 65565, },
-                width: 380,
-                ...promptOptions(),
-              },
-              window,
-            ) ?? defaultAPIServerConfig.websocketPort;
-
-            setConfig({ ...config, websocketPort: newWebsocketPort });
-          }
-        }
-      ]
-    }
   ];
 };

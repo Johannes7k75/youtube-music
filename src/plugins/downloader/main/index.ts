@@ -183,12 +183,18 @@ function downloadSongOnFinishSetup({
           config.downloadOnFinish.mode === 'seconds' &&
           duration - time <= config.downloadOnFinish.seconds
         ) {
-          downloadSong(currentUrl, config.downloadOnFinish.folder ?? config.downloadFolder);
+          downloadSong(
+            currentUrl,
+            config.downloadOnFinish.folder ?? config.downloadFolder,
+          );
         } else if (
           config.downloadOnFinish.mode === 'percent' &&
           time >= duration * (config.downloadOnFinish.percent / 100)
         ) {
-          downloadSong(currentUrl, config.downloadOnFinish.folder ?? config.downloadFolder);
+          downloadSong(
+            currentUrl,
+            config.downloadOnFinish.folder ?? config.downloadFolder,
+          );
         }
       }
 
@@ -566,7 +572,13 @@ export async function downloadPlaylist(givenUrl?: string | URL) {
     return;
   }
 
-  if (!playlist || !playlist.items || playlist.items.length === 0 || !playlist.header || !('title' in playlist.header)) {
+  if (
+    !playlist ||
+    !playlist.items ||
+    playlist.items.length === 0 ||
+    !playlist.header ||
+    !('title' in playlist.header)
+  ) {
     sendError(
       new Error(t('plugins.downloader.backend.feedback.playlist-is-empty')),
     );
