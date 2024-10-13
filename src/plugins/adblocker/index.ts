@@ -60,33 +60,33 @@ export default createPlugin({
 	menu: async ({ getConfig, setConfig }) => {
 		const config = await getConfig();
 
-		return [
-			{
-				label: t("plugins.adblocker.menu.blocker"),
-				submenu: Object.values(blockers).map((blocker) => ({
-					label: blocker,
-					type: "radio",
-					checked: (config.blocker || blockers.WithBlocklists) === blocker,
-					click() {
-						setConfig({ blocker });
-					},
-				})),
-			},
-		];
-	},
-	renderer: {
-		async onPlayerApiReady(_, { getConfig }) {
-			const config = await getConfig();
-			if (config.blocker === blockers.AdSpeedup) {
-				await loadAdSpeedup();
-			}
-		},
-	},
-	backend: {
-		mainWindow: null as BrowserWindow | null,
-		async start({ getConfig, window }) {
-			const config = await getConfig();
-			this.mainWindow = window;
+    return [
+      {
+        label: t('plugins.adblocker.menu.blocker'),
+        submenu: Object.values(blockers).map((blocker) => ({
+          label: blocker,
+          type: 'radio',
+          checked: (config.blocker || blockers.WithBlocklists) === blocker,
+          click() {
+            setConfig({ blocker });
+          },
+        })),
+      },
+    ];
+  },
+  renderer: {
+    async onPlayerApiReady(_, { getConfig }) {
+      const config = await getConfig();
+      if (config.blocker === blockers.AdSpeedup) {
+        await loadAdSpeedup();
+      }
+    },
+  },
+  backend: {
+    mainWindow: null as BrowserWindow | null,
+    async start({ getConfig, window }) {
+      const config = await getConfig();
+      this.mainWindow = window;
 
 			if (config.blocker === blockers.WithBlocklists) {
 				await loadAdBlockerEngine(
