@@ -11,6 +11,7 @@ import {
   shell,
   dialog,
   ipcMain,
+  protocol,
   type BrowserWindowConstructorOptions,
 } from 'electron';
 import enhanceWebRequest, {
@@ -82,6 +83,34 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.exit();
 }
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'http',
+    privileges: {
+      standard: true,
+      bypassCSP: true,
+      allowServiceWorkers: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+      codeCache: true,
+    },
+  },
+  {
+    scheme: 'https',
+    privileges: {
+      standard: true,
+      bypassCSP: true,
+      allowServiceWorkers: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+      stream: true,
+      codeCache: true,
+    },
+  },
+  { scheme: 'mailto', privileges: { standard: true } },
+]);
 
 // Ozone platform hint: Required for Wayland support
 app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
@@ -531,7 +560,11 @@ app.once('browser-window-created', (_event, win) => {
         console.log(log);
       }
 
-      if (errorCode !== -3) {
+      if (
+        errorCode !== -3 &&
+        // Workaround for #2435
+        !new URL(validatedURL).hostname.includes('doubleclick.net')
+      ) {
         // -3 is a false positive
         win.webContents.send('log', log);
         win.webContents.loadFile(ErrorHtmlAsset);

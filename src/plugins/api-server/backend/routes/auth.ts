@@ -6,9 +6,9 @@ import { getConnInfo } from '@hono/node-server/conninfo';
 
 import { t } from '@/i18n';
 
-import { APIServerConfig } from '../../config';
-import { JWTPayload } from '../scheme';
+import { type APIServerConfig, AuthStrategy } from '../../config';
 
+import type { JWTPayload } from '../scheme';
 import type { HonoApp } from '../types';
 import type { BackendContext } from '@/types/contexts';
 
@@ -18,6 +18,7 @@ const routes = {
     path: '/auth/{id}',
     summary: '',
     description: '',
+    security: [],
     request: {
       params: z.object({
         id: z.string(),
@@ -51,16 +52,16 @@ export const register = (
 
     if (config.authorizedClients.includes(id)) {
       // SKIP CHECK
-    } else if (config.authStrategy === 'AUTH_AT_FIRST') {
+    } else if (config.authStrategy === AuthStrategy.AUTH_AT_FIRST) {
       const result = await dialog.showMessageBox({
         title: t('plugins.api-server.dialog.request.title'),
         message: t('plugins.api-server.dialog.request.message', {
           origin: getConnInfo(ctx).remote.address,
-          id,
+          ID: id,
         }),
         buttons: [
           t('plugins.api-server.dialog.request.buttons.allow'),
-          t('plugins.api-server.dialog.request.deny'),
+          t('plugins.api-server.dialog.request.buttons.deny'),
         ],
         defaultId: 1,
         cancelId: 1,
@@ -70,7 +71,7 @@ export const register = (
         ctx.status(403);
         return ctx.body(null);
       }
-    } else if (config.authStrategy === 'NONE') {
+    } else if (config.authStrategy === AuthStrategy.NONE) {
       // SKIP CHECK
     }
 
