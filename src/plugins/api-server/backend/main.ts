@@ -9,7 +9,8 @@ import { createBackend } from '@/utils';
 import { JWTPayloadSchema } from './scheme';
 import { registerAuth, registerControl, registerWebsocket } from './routes';
 
-import type { APIServerConfig } from '../config';
+import { type APIServerConfig, AuthStrategy } from '../config';
+
 import type { BackendType } from './types';
 import { ipcMain } from 'electron';
 
@@ -47,19 +48,20 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     })
 
     // middlewares
-    this.app.use(
-      '/api/*',
-      jwt({
-        secret: config.secret,
-      }),
-    );
+    this.app.use('/api/*', async (ctx, next) => {
+      if (config.authStrategy !== AuthStrategy.NONE) {
+        return await jwt({
+          secret: config.secret,
+        })(ctx, next);
+      }
+      await next();
+    });
     this.app.use('/api/*', async (ctx, next) => {
       const result = await JWTPayloadSchema.spa(await ctx.get('jwtPayload'));
 
-      const isAuthorized = result.success && config.authorizedClients.includes(result.data.id);
-
-      console.log(isAuthorized, config.authorizedClients, result.success ?result.data.id: null);
-
+      const isAuthorized =
+        config.authStrategy === AuthStrategy.NONE ||
+        (result.success && config.authorizedClients.includes(result.data.id));
       if (!isAuthorized) {
         ctx.status(401);
         return ctx.body('Unauthorized');
@@ -80,12 +82,26 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     })
 
     // swagger
+    this.app.openAPIRegistry.registerComponent(
+      'securitySchemes',
+      'bearerAuth',
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    );
     this.app.doc('/doc', {
       openapi: '3.1.0',
       info: {
         version: '1.0.0',
         title: 'Youtube Music API Server',
       },
+      security: [
+        {
+          bearerAuth: [],
+        },
+      ],
     });
 
     this.app.get('/swagger', swaggerUI({ url: '/doc' }));
