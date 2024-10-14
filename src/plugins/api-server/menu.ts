@@ -3,7 +3,11 @@ import prompt from 'custom-electron-prompt';
 import { t } from '@/i18n';
 import promptOptions from '@/providers/prompt-options';
 
-import { type APIServerConfig, defaultAPIServerConfig } from './config';
+import {
+  type APIServerConfig,
+  AuthStrategy,
+  defaultAPIServerConfig,
+} from './config';
 
 import type { MenuContext } from '@/types/contexts';
 import type { MenuTemplate } from '@/menu';
@@ -67,17 +71,17 @@ export const onMenu = async ({
         {
           label: t('plugins.api-server.menu.auth-strategy.auth-at-first'),
           type: 'radio',
-          checked: config.authStrategy === 'AUTH_AT_FIRST',
+          checked: config.authStrategy === AuthStrategy.AUTH_AT_FIRST,
           click() {
-            setConfig({ ...config, authStrategy: 'AUTH_AT_FIRST' });
+            setConfig({ ...config, authStrategy: AuthStrategy.AUTH_AT_FIRST });
           },
         },
         {
           label: t('plugins.api-server.menu.auth-strategy.none'),
           type: 'radio',
-          checked: config.authStrategy === 'NONE',
+          checked: config.authStrategy === AuthStrategy.NONE,
           click() {
-            setConfig({ ...config, authStrategy: 'NONE' });
+            setConfig({ ...config, authStrategy: AuthStrategy.NONE });
           },
         },
       ],

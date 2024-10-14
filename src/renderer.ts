@@ -51,6 +51,13 @@ interface YouTubeMusicAppElement extends HTMLElement {
 }
 
 async function onApiLoaded() {
+  // Workaround for #2459
+  document
+    .querySelector('button.video-button.ytmusic-av-toggle')
+    ?.addEventListener('click', () =>
+      window.dispatchEvent(new Event('resize')),
+    );
+
   window.ipcRenderer.on('ytmd:previous-video', () => {
     document
       .querySelector<HTMLElement>('.previous-button.ytmusic-player-bar')
@@ -135,8 +142,8 @@ async function onApiLoaded() {
     }
   };
 
-  window.ipcRenderer.on('ytmd:get-fullscreen', (event) => {
-    event.sender.send('ytmd:set-fullscreen', isFullscreen());
+  window.ipcRenderer.on('ytmd:get-fullscreen', () => {
+    window.ipcRenderer.send('ytmd:set-fullscreen', isFullscreen());
   });
 
   window.ipcRenderer.on(
@@ -154,9 +161,9 @@ async function onApiLoaded() {
       ?.onVolumeTap();
   });
 
-  window.ipcRenderer.on('ytmd:get-queue', (event) => {
+  window.ipcRenderer.on('ytmd:get-queue', () => {
     const queue = document.querySelector<QueueElement>('#queue');
-    event.sender.send('ytmd:get-queue-response', {
+    window.ipcRenderer.send('ytmd:get-queue-response', {
       items: queue?.queue.getItems(),
       autoPlaying: queue?.queue.autoPlaying,
       continuation: queue?.queue.continuation,
@@ -243,16 +250,16 @@ async function onApiLoaded() {
     'options.likeButtons',
   );
   if (likeButtonsOptions) {
-    const likeButtons: HTMLElement | null = document.querySelector(
-      'ytmusic-like-button-renderer',
-    );
-    if (likeButtons) {
-      likeButtons.style.display =
-        {
-          hide: 'none',
-          force: 'inherit',
-        }[likeButtonsOptions] || '';
-    }
+    const style = document.createElement('style');
+    style.textContent = `
+      ytmusic-player-bar[is-mweb-player-bar-modernization-enabled] .middle-controls-buttons.ytmusic-player-bar, #like-button-renderer {
+        display: ${likeButtonsOptions === 'hide' ? 'none' : 'inherit'} !important;
+      }
+      ytmusic-player-bar[is-mweb-player-bar-modernization-enabled] .middle-controls.ytmusic-player-bar {
+        justify-content: ${likeButtonsOptions === 'hide' ? 'flex-start' : 'space-between'} !important;
+      }`;
+
+    document.head.appendChild(style);
   }
 }
 
