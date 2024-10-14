@@ -13,6 +13,9 @@ overrides:
   '@babel/runtime': 7.25.7
 
 patchedDependencies:
+  '@malept/flatpak-bundler':
+    hash: vli4xtu6rndz3xtsscixhngsxa
+    path: patches/@malept__flatpak-bundler.patch
   app-builder-lib@24.13.3:
     hash: zcnm2qnjaggm2keyecnhiglkke
     path: patches/app-builder-lib@24.13.3.patch
@@ -100,8 +103,8 @@ importers:
         specifier: 7.1.3
         version: 7.1.3
       electron-debug:
-        specifier: 4.0.1
-        version: 4.0.1
+        specifier: 4.1.0
+        version: 4.1.0
       electron-is:
         specifier: 3.0.0
         version: 3.0.0
@@ -239,8 +242,8 @@ importers:
         specifier: 6.0.0
         version: 6.0.0
       discord-api-types:
-        specifier: 0.37.101
-        version: 0.37.101
+        specifier: 0.37.102
+        version: 0.37.102
       electron:
         specifier: 32.2.0
         version: 32.2.0
@@ -2027,8 +2030,8 @@ packages:
   dir-compare@4.2.0:
     resolution: {integrity: sha512-2xMCmOoMrdQIPHdsTawECdNPwlVFB9zGcz3kuhmBO6U3oU+UQjsue0i8ayLKpgBcm+hcXPMVSGUN9d+pvJ6+VQ==}
 
-  discord-api-types@0.37.101:
-    resolution: {integrity: sha512-2wizd94t7G3A8U5Phr3AiuL4gSvhqistDwWnlk1VLTit8BI1jWUncFqFQNdPbHqS3661+Nx/iEyIwtVjPuBP3w==}
+  discord-api-types@0.37.102:
+    resolution: {integrity: sha512-5+m5twqG8n77rLhKuh2c/971UWszEL/c3KbdvVLUBTPXuS8PbYC/7W7NYhwP02qowjj6CHoKYZbD0ppOUCsT6g==}
 
   discord-api-types@0.37.83:
     resolution: {integrity: sha512-urGGYeWtWNYMKnYlZnOnDHm8fVRffQs3U0SpE8RHeiuLKb/u92APS8HoQnPTFbnXmY1vVnXjXO4dOxcAn3J+DA==}
@@ -2095,8 +2098,8 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
-  electron-debug@4.0.1:
-    resolution: {integrity: sha512-PdUG3SvcK70P05z99PFLUzn0+lPZl5c4quG1bXI7OtPaXxidwh8UONcdRLsr+6J9kf5y1FycJD5nBd80dYrcsA==}
+  electron-debug@4.1.0:
+    resolution: {integrity: sha512-rdbvmotqbaNcSuinPe1tzB5zK+JKal+4LSDbguBcqTLARNqWrGoRS/TkR1gGH4+63boYH3HUaf9r9ECAxgIe9g==}
     engines: {node: '>=18'}
 
   electron-devtools-installer@3.2.0:
@@ -5135,7 +5138,7 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.3
 
-  '@malept/flatpak-bundler@0.4.0':
+  '@malept/flatpak-bundler@0.4.0(patch_hash=vli4xtu6rndz3xtsscixhngsxa)':
     dependencies:
       debug: 4.3.7
       fs-extra: 9.1.0
@@ -5521,7 +5524,7 @@ snapshots:
     dependencies:
       '@discordjs/rest': 2.3.0
       '@vladfrangu/async_event_emitter': 2.4.4
-      discord-api-types: 0.37.101
+      discord-api-types: 0.37.102
       ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@6.0.4)
     transitivePeerDependencies:
       - bufferutil
@@ -5618,7 +5621,7 @@ snapshots:
       '@electron/notarize': 2.2.1
       '@electron/osx-sign': 1.0.5
       '@electron/universal': 2.0.1
-      '@malept/flatpak-bundler': 0.4.0
+      '@malept/flatpak-bundler': 0.4.0(patch_hash=vli4xtu6rndz3xtsscixhngsxa)
       '@types/fs-extra': 9.0.13
       async-exit-hook: 2.0.1
       bluebird-lst: 1.0.9
@@ -6252,7 +6255,7 @@ snapshots:
       minimatch: 3.1.2
       p-limit: 3.1.0
 
-  discord-api-types@0.37.101: {}
+  discord-api-types@0.37.102: {}
 
   discord-api-types@0.37.83: {}
 
@@ -6351,7 +6354,7 @@ snapshots:
       - electron-builder-squirrel-windows
       - supports-color
 
-  electron-debug@4.0.1:
+  electron-debug@4.1.0:
     dependencies:
       electron-is-dev: 3.0.1
       electron-localshortcut: 3.2.1
