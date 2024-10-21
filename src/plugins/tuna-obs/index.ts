@@ -16,6 +16,7 @@ interface Data {
   progress: number;
   status: string;
   title: string;
+  url: string;
 }
 
 export default createPlugin({
@@ -37,6 +38,7 @@ export default createPlugin({
       duration: 0,
       album_url: '',
       album: undefined,
+      url: '',
     } as Data,
     start({ ipc }) {
       const secToMilisec = (t: number) => Math.round(Number(t) * 1e3);
@@ -67,12 +69,14 @@ export default createPlugin({
             }
           })
           .catch((error: { code: number; errno: number }) => {
-            if (!this.liteMode && is.dev()) {
-              console.debug(
-                `Error: '${
-                  error.code || error.errno
-                }' - when trying to access obs-tuna webserver at port ${port}. enable lite mode`,
-              );
+            if (!this.liteMode) {
+              if (is.dev()) {
+                console.debug(
+                  `Error: '${
+                    error.code || error.errno
+                  }' - when trying to access obs-tuna webserver at port ${port}. enable lite mode`,
+                );
+              }
               this.liteMode = true;
             }
           });
@@ -104,6 +108,7 @@ export default createPlugin({
         this.data.artists = [songInfo.artist];
         this.data.status = songInfo.isPaused ? 'stopped' : 'playing';
         this.data.album = songInfo.album;
+        this.data.url = songInfo.url ?? '';
         post(this.data);
       });
     },
