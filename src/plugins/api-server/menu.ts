@@ -11,6 +11,7 @@ import {
 
 import type { MenuContext } from '@/types/contexts';
 import type { MenuTemplate } from '@/menu';
+import { unregisterWebsocket } from './backend/routes';
 
 export const onMenu = async ({
   getConfig,
@@ -92,6 +93,49 @@ export const onMenu = async ({
           },
         },
       ],
+    },
+    {
+      label: t("plugins.api-server.menu.websocket.label"),
+      type: "submenu",
+      submenu: [
+        {
+          label: t("plugins.api-server.menu.websocket.submenu.enabled.label"),
+          type: "checkbox",
+          checked: config.websocket,
+          click(item) {
+            if (!item.checked) {
+              unregisterWebsocket();
+            }
+
+            setConfig({...config, websocket: item.checked})
+          }
+        },
+        {
+          label: t("plugins.api-server.menu.websocket.submenu.port.label"),
+          type: "normal", 
+          async click() {
+            const config = await getConfig();
+    
+            const newPort =
+              (await prompt(
+                {
+                  title: t('plugins.api-server.prompt.websocket.port.title'),
+                  label: t('plugins.api-server.prompt.websocket.port.label'),
+                  value: config.websocketPort,
+                  type: 'counter',
+                  counterOptions: { minimum: 0, maximum: 65565 },
+                  width: 380,
+                  ...promptOptions(),
+                },
+                window,
+              )) ??
+              config.websocketPort ??
+              defaultAPIServerConfig.websocketPort;
+    
+            setConfig({ ...config, websocketPort: newPort });
+          },
+        }
+      ]
     },
   ];
 };

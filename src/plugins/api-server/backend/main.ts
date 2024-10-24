@@ -8,11 +8,12 @@ import registerCallback from '@/providers/song-info';
 import { createBackend } from '@/utils';
 
 import { JWTPayloadSchema } from './scheme';
-import { registerAuth, registerControl } from './routes';
+import { registerAuth, registerControl, registerWebsocket } from './routes';
 
 import { type APIServerConfig, AuthStrategy } from '../config';
 
 import type { BackendType } from './types';
+import { ipcMain } from 'electron';
 
 export const backend = createBackend<BackendType, APIServerConfig>({
   async start(ctx) {
@@ -75,6 +76,13 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     // routes
     registerControl(this.app, ctx, () => this.songInfo);
     registerAuth(this.app, ctx);
+
+    if (config.websocket) ipcMain.once("ytmd:player-api-loaded", () => {
+      ctx.window.webContents.send("ytmd:setup-repeat-changed-listener")
+      ctx.window.webContents.send("ytmd:setup-volume-changed-listener")
+
+      registerWebsocket(ctx);
+    })
 
     // swagger
     this.app.openAPIRegistry.registerComponent(
