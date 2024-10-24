@@ -303,6 +303,17 @@
             }
           }
         },
+        "websocket": {
+          "label": "Websocket",
+          "submenu": {
+            "port": {
+              "label": "Port"
+            },
+            "enabled": {
+              "label": "Enabled"
+            }
+          }
+        },
         "hostname": {
           "label": "Hostname"
         },
@@ -319,6 +330,12 @@
         "port": {
           "label": "Enter the port for the API server:",
           "title": "Port"
+        },
+        "websocket": {
+          "port": {
+            "title": "Enter the port for the API websocket server:",
+            "label": "Port"
+          }
         }
       }
     },
