@@ -5,21 +5,29 @@ import { ipcMain } from 'electron';
 import getSongControls from '@/providers/song-controls';
 
 import {
+  AddSongToQueueSchema,
   AuthHeadersSchema,
-  type ResponseSongInfo,
-  SongInfoSchema,
-  GoForwardScheme,
   GoBackSchema,
-  SwitchRepeatSchema,
-  SetVolumeSchema,
+  GoForwardScheme,
+  MoveSongInQueueSchema,
+  QueueParamsSchema,
+  SearchSchema,
+  SeekSchema,
   SetFullscreenSchema,
+  SetQueueIndexSchema,
+  SetVolumeSchema,
+  SongInfoSchema,
+  SwitchRepeatSchema,
+  type ResponseSongInfo,
 } from '../scheme';
 
+import type { RepeatMode } from '@/types/datahost-get-state';
 import type { SongInfo } from '@/providers/song-info';
 import type { BackendContext } from '@/types/contexts';
 import type { APIServerConfig } from '../../config';
 import type { HonoApp } from '../types';
 import type { QueueResponse } from '@/types/youtube-music-desktop-internal';
+import type { Context } from 'hono';
 
 const API_VERSION = 'v1';
 
@@ -118,7 +126,28 @@ const routes = {
       },
     },
   }),
-
+  seekTo: createRoute({
+    method: 'post',
+    path: `/api/${API_VERSION}/seek-to`,
+    summary: 'seek',
+    description: 'Seek to a specific time in the current song',
+    request: {
+      headers: AuthHeadersSchema,
+      body: {
+        description: 'seconds to seek to',
+        content: {
+          'application/json': {
+            schema: SeekSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
   goBack: createRoute({
     method: 'post',
     path: `/api/${API_VERSION}/go-back`,
@@ -173,6 +202,24 @@ const routes = {
     responses: {
       204: {
         description: 'Success',
+      },
+    },
+  }),
+  repeatMode: createRoute({
+    method: 'get',
+    path: `/api/${API_VERSION}/repeat-mode`,
+    summary: 'get current repeat mode',
+    description: 'Get the current repeat mode (NONE, ALL, ONE)',
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: z.object({
+              mode: z.enum(['ONE', 'NONE', 'ALL']).nullable(),
+            }),
+          },
+        },
       },
     },
   }),
@@ -272,7 +319,8 @@ const routes = {
       },
     },
   }),
-  queueInfo: createRoute({
+  oldQueueInfo: createRoute({
+    deprecated: true,
     method: 'get',
     path: `/api/${API_VERSION}/queue-info`,
     summary: 'get current queue info',
@@ -291,7 +339,8 @@ const routes = {
       },
     },
   }),
-  songInfo: createRoute({
+  oldSongInfo: createRoute({
+    deprecated: true,
     method: 'get',
     path: `/api/${API_VERSION}/song-info`,
     summary: 'get current song info',
@@ -310,9 +359,172 @@ const routes = {
       },
     },
   }),
+  songInfo: createRoute({
+    method: 'get',
+    path: `/api/${API_VERSION}/song`,
+    summary: 'get current song info',
+    description: 'Get the current song info',
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: SongInfoSchema,
+          },
+        },
+      },
+      204: {
+        description: 'No song info',
+      },
+    },
+  }),
+  queueInfo: createRoute({
+    method: 'get',
+    path: `/api/${API_VERSION}/queue`,
+    summary: 'get current queue info',
+    description: 'Get the current queue info',
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: z.object({}),
+          },
+        },
+      },
+      204: {
+        description: 'No queue info',
+      },
+    },
+  }),
+  addSongToQueue: createRoute({
+    method: 'post',
+    path: `/api/${API_VERSION}/queue`,
+    summary: 'add song to queue',
+    description: 'Add a song to the queue',
+    request: {
+      headers: AuthHeadersSchema,
+      body: {
+        description: 'video id of the song to add',
+        content: {
+          'application/json': {
+            schema: AddSongToQueueSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  moveSongInQueue: createRoute({
+    method: 'patch',
+    path: `/api/${API_VERSION}/queue/{index}`,
+    summary: 'move song in queue',
+    description: 'Move a song in the queue',
+    request: {
+      headers: AuthHeadersSchema,
+      params: QueueParamsSchema,
+      body: {
+        description: 'index to move the song to',
+        content: {
+          'application/json': {
+            schema: MoveSongInQueueSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  removeSongFromQueue: createRoute({
+    method: 'delete',
+    path: `/api/${API_VERSION}/queue/{index}`,
+    summary: 'remove song from queue',
+    description: 'Remove a song from the queue',
+    request: {
+      headers: AuthHeadersSchema,
+      params: QueueParamsSchema,
+    },
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  setQueueIndex: createRoute({
+    method: 'patch',
+    path: `/api/${API_VERSION}/queue`,
+    summary: 'set queue index',
+    description: 'Set the current index of the queue',
+    request: {
+      headers: AuthHeadersSchema,
+      body: {
+        description: 'index to move the song to',
+        content: {
+          'application/json': {
+            schema: SetQueueIndexSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  clearQueue: createRoute({
+    method: 'delete',
+    path: `/api/${API_VERSION}/queue`,
+    summary: 'clear queue',
+    description: 'Clear the queue',
+    responses: {
+      204: {
+        description: 'Success',
+      },
+    },
+  }),
+  search: createRoute({
+    method: 'post',
+    path: `/api/${API_VERSION}/search`,
+    summary: 'search for a song',
+    description: 'search for a song',
+    request: {
+      headers: AuthHeadersSchema,
+      body: {
+        description: 'search query',
+        content: {
+          'application/json': {
+            schema: SearchSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: z.object({}),
+          },
+        },
+      },
+    },
+  }),
 };
 
-export const register = (app: HonoApp, { window }: BackendContext<APIServerConfig>, songInfoGetter: () => SongInfo | undefined) => {
+export const register = (
+  app: HonoApp,
+  { window }: BackendContext<APIServerConfig>,
+  songInfoGetter: () => SongInfo | undefined,
+  repeatModeGetter: () => RepeatMode | undefined,
+) => {
   const controller = getSongControls(window);
 
   app.openapi(routes.previous, (ctx) => {
@@ -379,6 +591,13 @@ export const register = (app: HonoApp, { window }: BackendContext<APIServerConfi
     ctx.status(204);
     return ctx.body(null);
   });
+  app.openapi(routes.seekTo, (ctx) => {
+    const { seconds } = ctx.req.valid('json');
+    controller.seekTo(seconds);
+
+    ctx.status(204);
+    return ctx.body(null);
+  });
   app.openapi(routes.goBack, (ctx) => {
     const { seconds } = ctx.req.valid('json');
     controller.goBack(seconds);
@@ -398,6 +617,11 @@ export const register = (app: HonoApp, { window }: BackendContext<APIServerConfi
 
     ctx.status(204);
     return ctx.body(null);
+  });
+
+  app.openapi(routes.repeatMode, (ctx) => {
+    ctx.status(200);
+    return ctx.json({ mode: repeatModeGetter() ?? null });
   });
   app.openapi(routes.switchRepeat, (ctx) => {
     const { iteration } = ctx.req.valid('json');
@@ -441,7 +665,26 @@ export const register = (app: HonoApp, { window }: BackendContext<APIServerConfi
     ctx.status(200);
     return ctx.json({ state: fullscreen });
   });
-  app.openapi(routes.queueInfo, async (ctx) => {
+
+  const songInfo = (ctx: Context) => {
+    const info = songInfoGetter();
+
+    if (!info) {
+      ctx.status(204);
+      return ctx.body(null);
+    }
+
+    const body = { ...info };
+    delete body.image;
+
+    ctx.status(200);
+    return ctx.json(body satisfies ResponseSongInfo);
+  };
+  app.openapi(routes.oldSongInfo, songInfo);
+  app.openapi(routes.songInfo, songInfo);
+
+  // Queue
+  const queueInfo = async (ctx: Context) => {
     const queueResponsePromise = new Promise<QueueResponse>((resolve) => {
       ipcMain.once('ytmd:get-queue-response', (_, queue: QueueResponse) => {
         return resolve(queue);
@@ -459,19 +702,50 @@ export const register = (app: HonoApp, { window }: BackendContext<APIServerConfi
 
     ctx.status(200);
     return ctx.json(info);
+  };
+  app.openapi(routes.oldQueueInfo, queueInfo);
+  app.openapi(routes.queueInfo, queueInfo);
+
+  app.openapi(routes.addSongToQueue, (ctx) => {
+    const { videoId } = ctx.req.valid('json');
+    controller.addSongToQueue(videoId);
+
+    ctx.status(204);
+    return ctx.body(null);
   });
-  app.openapi(routes.songInfo, (ctx) => {
-    const info = songInfoGetter();
+  app.openapi(routes.moveSongInQueue, (ctx) => {
+    const index = Number(ctx.req.param('index'));
+    const { toIndex } = ctx.req.valid('json');
+    controller.moveSongInQueue(index, toIndex);
 
-    if (!info) {
-      ctx.status(204);
-      return ctx.body(null);
-    }
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.removeSongFromQueue, (ctx) => {
+    const index = Number(ctx.req.param('index'));
+    controller.removeSongFromQueue(index);
 
-    const body = { ...info };
-    delete body.image;
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.setQueueIndex, (ctx) => {
+    const { index } = ctx.req.valid('json');
+    controller.setQueueIndex(index);
+
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.clearQueue, (ctx) => {
+    controller.clearQueue();
+
+    ctx.status(204);
+    return ctx.body(null);
+  });
+  app.openapi(routes.search, async (ctx) => {
+    const { query } = ctx.req.valid('json');
+    const response = await controller.search(query);
 
     ctx.status(200);
-    return ctx.json(body satisfies ResponseSongInfo);
+    return ctx.json(response as object);
   });
 };
