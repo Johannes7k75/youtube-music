@@ -14,6 +14,7 @@ import { type APIServerConfig, AuthStrategy } from '../config';
 
 import type { BackendType } from './types';
 import { ipcMain } from 'electron';
+import type { RepeatMode } from '@/types/datahost-get-state';
 
 export const backend = createBackend<BackendType, APIServerConfig>({
   async start(ctx) {
@@ -23,6 +24,16 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     registerCallback((songInfo) => {
       this.songInfo = songInfo;
     });
+
+    ctx.ipc.on('ytmd:player-api-loaded', () => {
+      ctx.ipc.send('ytmd:setup-time-changed-listener');
+      ctx.ipc.send('ytmd:setup-repeat-changed-listener');
+    });
+
+    ctx.ipc.on(
+      'ytmd:repeat-changed',
+      (mode: RepeatMode) => (this.currentRepeatMode = mode),
+    );
 
     this.run(config.hostname, config.port);
   },
@@ -50,6 +61,12 @@ export const backend = createBackend<BackendType, APIServerConfig>({
 
     this.app.use('*', cors());
 
+    // for web remote control
+    this.app.use('*', async (ctx, next) => {
+      ctx.header('Access-Control-Request-Private-Network', 'true');
+      await next();
+    });
+
     // middlewares
     this.app.use('/api/*', async (ctx, next) => {
       if (config.authStrategy !== AuthStrategy.NONE) {
@@ -74,7 +91,12 @@ export const backend = createBackend<BackendType, APIServerConfig>({
     });
 
     // routes
-    registerControl(this.app, ctx, () => this.songInfo);
+    registerControl(
+      this.app,
+      ctx,
+      () => this.songInfo,
+      () => this.currentRepeatMode,
+    );
     registerAuth(this.app, ctx);
 
     if (config.websocket) ipcMain.once("ytmd:player-api-loaded", () => {

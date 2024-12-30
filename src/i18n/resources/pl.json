@@ -279,6 +279,56 @@
       },
       "name": "Tryb otoczenia"
     },
+    "amuse": {
+      "description": "Wspiera integrację YouTube Music z widgetami Amuse (od 6K Labs)",
+      "name": "Amuse",
+      "response": {
+        "query": "Serwer API Amuse działa. Użyj metody GET do /query, aby zdobyć informację o utworze."
+      }
+    },
+    "api-server": {
+      "description": "Pozwala na kontrolowanie YouTube Music poprzez podłączenie specjalnego serwera API",
+      "dialog": {
+        "request": {
+          "buttons": {
+            "allow": "Zezwól",
+            "deny": "Odmów"
+          },
+          "message": "Zezwolić {{ID}} (pochodzenie: {{origin}}) na dostęp do API?",
+          "title": "Prośba o autoryzację API"
+        }
+      },
+      "menu": {
+        "auth-strategy": {
+          "label": "Strategia autoryzacji",
+          "submenu": {
+            "auth-at-first": {
+              "label": "Autoryzuj przy pierwszej prośbie"
+            },
+            "none": {
+              "label": "Nie autoryzuj"
+            }
+          }
+        },
+        "hostname": {
+          "label": "Nazwa hosta (IP)"
+        },
+        "port": {
+          "label": "Port"
+        }
+      },
+      "name": "YouTube Music API",
+      "prompt": {
+        "hostname": {
+          "label": "Wpisz nazwę hosta (IP, np. 0.0.0.0), który będzie użyty do serwera API:",
+          "title": "Nazwa hosta"
+        },
+        "port": {
+          "label": "Wpisz port, z którego będzie korzystać serwer API:",
+          "title": "Port"
+        }
+      }
+    },
     "audio-compressor": {
       "description": "Zastosuj kompresję do dźwięku (obniża głośność najgłośniejszych części sygnału i zwiększa głośność najcichszych części)",
       "name": "Kompresor dźwięku"
@@ -440,6 +490,18 @@
       "templates": {
         "button": "Pobierz"
       }
+    },
+    "equalizer": {
+      "description": "Dodaje equalizer do odtwarzacza",
+      "menu": {
+        "presets": {
+          "label": "Presety",
+          "list": {
+            "bass-booster": "Wzmacniacz basu"
+          }
+        }
+      },
+      "name": "Korektor"
     },
     "exponential-volume": {
       "description": "Sprawia, że suwak głośności jest proporcjonalna, dzięki czemu łatwiej jest wybrać niższą głośność.",
@@ -671,8 +733,8 @@
     "synced-lyrics": {
       "description": "Dodaje zsynchronizowane napisy do utworów używając między innymi LRClib.",
       "errors": {
-        "fetch": "⚠️ - Wystąpił błąd podczas pobierania tekstu utworu. Spróbuj ponownie później.",
-        "not-found": "⚠️ - Nie znaleziono napisów dla tego utworu."
+        "fetch": "⚠️\tWystąpił błąd podczas pobierania tekstu utworu.\n\tSpróbuj ponownie później.",
+        "not-found": "⚠️ Nie znaleziono napisów dla tego utworu."
       },
       "menu": {
         "default-text-string": {
@@ -682,6 +744,10 @@
         "line-effect": {
           "label": "Efekty linijki",
           "submenu": {
+            "fancy": {
+              "label": "Facy",
+              "tooltip": "Użyj specjalnych efektów w stylu aplikacji na obecną linię"
+            },
             "focus": {
               "label": "Fokus",
               "tooltip": "Spraw, aby tylko obecna linijka była biała"

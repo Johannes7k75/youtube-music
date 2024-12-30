@@ -279,6 +279,49 @@
       },
       "name": "Mode ambiant"
     },
+    "api-server": {
+      "description": "Ajouter un serveur API pour contrôler le lecteur",
+      "dialog": {
+        "request": {
+          "buttons": {
+            "allow": "Autoriser",
+            "deny": "Interdire"
+          },
+          "message": "Autoriser {{ID}} ({{origin}}) à accéder à l'API ?",
+          "title": "Requête d'autorisation d'API"
+        }
+      },
+      "menu": {
+        "auth-strategy": {
+          "label": "Plan d'autorisation",
+          "submenu": {
+            "auth-at-first": {
+              "label": "Autoriser à la première requête"
+            },
+            "none": {
+              "label": "Pas d'autorisation"
+            }
+          }
+        },
+        "hostname": {
+          "label": "Nom de l'hôte"
+        },
+        "port": {
+          "label": "Port"
+        }
+      },
+      "name": "Serveur API [Beta]",
+      "prompt": {
+        "hostname": {
+          "label": "Entrer le nom de l'hôte (par exemple 0.0.0.0) pour le serveur API:",
+          "title": "Nom d'hôte"
+        },
+        "port": {
+          "label": "Entrez le port du serveur de l'API:",
+          "title": "Port"
+        }
+      }
+    },
     "audio-compressor": {
       "description": "Appliquer une compression à l'audio (diminue le volume des parties les plus fortes du signal et augmente le volume des parties les plus faibles)",
       "name": "Compresseur audio"
@@ -440,6 +483,18 @@
       "templates": {
         "button": "Télécharger"
       }
+    },
+    "equalizer": {
+      "description": "Ajoute un égaliseur au lecteur",
+      "menu": {
+        "presets": {
+          "label": "Préréglages",
+          "list": {
+            "bass-booster": "Amplificateur de basses"
+          }
+        }
+      },
+      "name": "Égaliseur"
     },
     "exponential-volume": {
       "description": "Rend le curseur de volume exponentiel afin qu'il soit plus facile de sélectionner des volumes plus faibles.",
@@ -671,7 +726,7 @@
     "synced-lyrics": {
       "description": "Ajoute des paroles synchronisées aux chansons, grâce à LRClib par exemple.",
       "errors": {
-        "fetch": "⚠️ - Une erreur s'est produite en allant chercher les paroles. Merci de réessayer plus tard.",
+        "fetch": "⚠️\tUne erreur s'est produite en allant chercher les paroles.\n\tMerci de réessayer plus tard.",
         "not-found": "⚠️ - Aucune paroles trouvées pour cette musique."
       },
       "menu": {
