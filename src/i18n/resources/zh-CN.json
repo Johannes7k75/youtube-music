@@ -279,6 +279,13 @@
       },
       "name": "沉浸模式"
     },
+    "amuse": {
+      "description": "为 6K Labs 的 Amuse 正在播放小部件添加 YouTube Music 支持",
+      "name": "Amuse",
+      "response": {
+        "query": "Amuse API服务器已在运行。使用 /query 以获取歌曲信息。"
+      }
+    },
     "api-server": {
       "description": "添加一个 API 服务器来控制播放器",
       "dialog": {
@@ -483,6 +490,18 @@
       "templates": {
         "button": "下载"
       }
+    },
+    "equalizer": {
+      "description": "为播放器添加均衡器",
+      "menu": {
+        "presets": {
+          "label": "预设",
+          "list": {
+            "bass-booster": "低音增强器"
+          }
+        }
+      },
+      "name": "均衡器"
     },
     "exponential-volume": {
       "description": "让音量滑块指数化以便选择更低的音量。",

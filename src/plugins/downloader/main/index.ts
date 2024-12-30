@@ -30,12 +30,13 @@ import registerCallback, {
   getImage,
   MediaType,
   type SongInfo,
+  SongInfoEvent,
 } from '@/providers/song-info';
 import { getNetFetchAsFetch } from '@/plugins/utils/main';
 
 import { t } from '@/i18n';
 
-import { YoutubeFormatList, type Preset, DefaultPresetList } from '../types';
+import { DefaultPresetList, type Preset, YoutubeFormatList } from '../types';
 
 import type { DownloaderPluginConfig } from '../index';
 
@@ -62,13 +63,23 @@ let yt: Innertube;
 let win: BrowserWindow;
 let playingUrl: string;
 
+const isYouTubePremium = () =>
+  win.webContents.executeJavaScript(
+    '!document.querySelector(\'#endpoint[href="/music_premium"]\')',
+  ) as Promise<boolean>;
+
 const sendError = (error: Error, source?: string) => {
   win.setProgressBar(-1); // Close progress bar
   setBadge(0); // Close badge
   sendFeedback_(win); // Reset feedback
 
   const songNameMessage = source ? `\nin ${source}` : '';
-  const cause = error.cause ? `\n\n${String(error.cause)}` : '';
+  const cause = error.cause
+    ? `\n\n${
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string,@typescript-eslint/restrict-template-expressions
+        error.cause instanceof Error ? error.cause.toString() : error.cause
+      }`
+    : '';
   const message = `${error.toString()}${songNameMessage}${cause}`;
 
   console.error(message);
@@ -174,7 +185,12 @@ function downloadSongOnFinishSetup({
 
   const defaultDownloadFolder = app.getPath('downloads');
 
-  registerCallback((songInfo: SongInfo) => {
+  registerCallback((songInfo: SongInfo, event) => {
+    if (event === SongInfoEvent.TimeChanged) {
+      const elapsedSeconds = songInfo.elapsedSeconds ?? 0;
+      if (elapsedSeconds > time) time = elapsedSeconds;
+      return;
+    }
     if (
       !songInfo.isPaused &&
       songInfo.url !== currentUrl &&
@@ -212,10 +228,6 @@ function downloadSongOnFinishSetup({
 
   ipcMain.on('ytmd:player-api-loaded', () => {
     ipc.send('ytmd:setup-time-changed-listener');
-  });
-
-  ipcMain.on('ytmd:time-changed', (_, t: number) => {
-    if (t > time) time = t;
   });
 }
 
@@ -306,7 +318,7 @@ async function downloadSongUnsafe(
   }
 
   const downloadOptions: FormatOptions = {
-    type: 'audio', // Audio, video or video+audio
+    type: (await isYouTubePremium()) ? 'audio' : 'video+audio', // Audio, video or video+audio
     quality: 'best', // Best, bestefficiency, 144p, 240p, 480p, 720p and so on.
     format: 'any', // Media container format
   };
@@ -578,20 +590,17 @@ export async function downloadPlaylist(givenUrl?: string | URL) {
     return;
   }
 
-  if (
-    !playlist ||
-    !playlist.items ||
-    playlist.items.length === 0 ||
-    !playlist.header ||
-    !('title' in playlist.header)
-  ) {
+  if (!playlist || !playlist.items || playlist.items.length === 0) {
     sendError(
       new Error(t('plugins.downloader.backend.feedback.playlist-is-empty')),
     );
     return;
   }
 
-  const normalPlaylistTitle = playlist.header?.title?.text;
+  const normalPlaylistTitle =
+    playlist.header && 'title' in playlist.header
+      ? playlist.header?.title?.text
+      : undefined;
   const playlistTitle =
     normalPlaylistTitle ??
     playlist.page.contents_memo
