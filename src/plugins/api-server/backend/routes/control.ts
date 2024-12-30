@@ -6,7 +6,6 @@ import getSongControls from '@/providers/song-controls';
 
 import {
   AddSongToQueueSchema,
-  AuthHeadersSchema,
   GoBackSchema,
   GoForwardScheme,
   MoveSongInQueueSchema,
@@ -132,7 +131,6 @@ const routes = {
     summary: 'seek',
     description: 'Seek to a specific time in the current song',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'seconds to seek to',
         content: {
@@ -154,7 +152,6 @@ const routes = {
     summary: 'go back',
     description: 'Move the current song back by a number of seconds',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'seconds to go back',
         content: {
@@ -177,7 +174,6 @@ const routes = {
     summary: 'go forward',
     description: 'Move the current song forward by a number of seconds',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'seconds to go forward',
         content: {
@@ -229,7 +225,6 @@ const routes = {
     summary: 'switch repeat',
     description: 'Switch the repeat mode',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'number of times to click the repeat button',
         content: {
@@ -251,7 +246,6 @@ const routes = {
     summary: 'set volume',
     description: 'Set the volume of the player',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'volume to set',
         content: {
@@ -273,7 +267,6 @@ const routes = {
     summary: 'set fullscreen',
     description: 'Set the fullscreen state of the player',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'fullscreen state',
         content: {
@@ -403,7 +396,6 @@ const routes = {
     summary: 'add song to queue',
     description: 'Add a song to the queue',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'video id of the song to add',
         content: {
@@ -425,7 +417,6 @@ const routes = {
     summary: 'move song in queue',
     description: 'Move a song in the queue',
     request: {
-      headers: AuthHeadersSchema,
       params: QueueParamsSchema,
       body: {
         description: 'index to move the song to',
@@ -448,7 +439,6 @@ const routes = {
     summary: 'remove song from queue',
     description: 'Remove a song from the queue',
     request: {
-      headers: AuthHeadersSchema,
       params: QueueParamsSchema,
     },
     responses: {
@@ -463,7 +453,6 @@ const routes = {
     summary: 'set queue index',
     description: 'Set the current index of the queue',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'index to move the song to',
         content: {
@@ -496,7 +485,6 @@ const routes = {
     summary: 'search for a song',
     description: 'search for a song',
     request: {
-      headers: AuthHeadersSchema,
       body: {
         description: 'search query',
         content: {

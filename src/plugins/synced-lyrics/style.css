@@ -17,7 +17,7 @@
   /* Typography */
   --lyrics-font-family: Satoshi, Avenir, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
   Open Sans, Helvetica Neue, sans-serif;
-  --lyrics-font-size: 1.4rem;
+  --lyrics-font-size: clamp(1.4rem, 1.1vmax, 3rem);
   --lyrics-line-height: var(--ytmusic-body-line-height);
   --lyrics-width: 100%;
 
@@ -190,7 +190,7 @@
   position: sticky;
   top: var(--top, 0);
   z-index: 100;
-  background-color: var(--ytmusic-background);
+  backdrop-filter: blur(5px);
 
   transition: top 325ms ease-in-out;
 }
