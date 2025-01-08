@@ -1,16 +1,33 @@
+const playerSelector = ".player-wrapper.ytmusic-player";
+const skipButtonSelector = "button.ytp-ad-skip-button-modern";
+const adShowingSelectors = [
+  "ad-showing",
+  "ad-interrupting"
+]
+
 function skipAd(target: Element) {
   const skipButton = target.querySelector<HTMLButtonElement>(
-    'button.ytp-ad-skip-button-modern',
+    skipButtonSelector
   );
   if (skipButton) {
     skipButton.click();
   }
 }
 
+function isAdShowing(element: Element): boolean {
+  for (const selector of adShowingSelectors) {
+    if (element.classList.contains(selector)) return true;
+  }
+  return false;
+}
+
 function speedUpAndMute(player: Element, isAdShowing: boolean) {
   const video = player.querySelector<HTMLVideoElement>('video');
   if (!video) return;
   if (isAdShowing) {
+    if (video.paused) {
+      video.play();
+    }
     video.playbackRate = 16;
     video.muted = true;
   } else if (!isAdShowing) {
@@ -20,7 +37,7 @@ function speedUpAndMute(player: Element, isAdShowing: boolean) {
 }
 
 export const loadAdSpeedup = () => {
-  const player = document.querySelector<HTMLVideoElement>('#movie_player');
+  const player = document.querySelector<HTMLDivElement>(playerSelector);
   if (!player) return;
 
   new MutationObserver((mutations) => {
@@ -31,10 +48,7 @@ export const loadAdSpeedup = () => {
       ) {
         const target = mutation.target as HTMLElement;
 
-        const isAdShowing =
-          target.classList.contains('ad-showing') ||
-          target.classList.contains('ad-interrupting');
-        speedUpAndMute(target, isAdShowing);
+        speedUpAndMute(target, isAdShowing(target));
       }
       if (
         mutation.type === 'childList' &&
@@ -50,9 +64,6 @@ export const loadAdSpeedup = () => {
     subtree: true,
   });
 
-  const isAdShowing =
-    player.classList.contains('ad-showing') ||
-    player.classList.contains('ad-interrupting');
-  speedUpAndMute(player, isAdShowing);
+  speedUpAndMute(player, isAdShowing(player));
   skipAd(player);
 };

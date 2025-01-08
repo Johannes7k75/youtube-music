@@ -9,11 +9,8 @@ export interface APIServerConfig {
   port: number;
   authStrategy: AuthStrategy;
   secret: string;
-  websocket: boolean,
-  websocketPort: number;
 
   authorizedClients: string[];
-  volume: number;
 }
 
 export const defaultAPIServerConfig: APIServerConfig = {
@@ -22,9 +19,6 @@ export const defaultAPIServerConfig: APIServerConfig = {
   port: 26538,
   authStrategy: AuthStrategy.AUTH_AT_FIRST,
   secret: Date.now().toString(36),
-  websocket: true,
-  websocketPort: 26539,
 
   authorizedClients: [],
-  volume: 0,
 };
