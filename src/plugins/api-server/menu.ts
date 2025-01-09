@@ -11,8 +11,6 @@ import {
 
 import type { MenuContext } from '@/types/contexts';
 import type { MenuTemplate } from '@/menu';
-import { unregisterWebsocket } from './backend/routes';
-import { unregisterWebsocket } from './backend/routes';
 
 export const onMenu = async ({
   getConfig,

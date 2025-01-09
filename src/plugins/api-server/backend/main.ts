@@ -7,16 +7,13 @@ import registerCallback from '@/providers/song-info';
 import { createBackend } from '@/utils';
 
 import { JWTPayloadSchema } from './scheme';
-import { registerAuth, registerControl, registerWebsocket } from './routes';
+import { registerAuth, registerControl } from './routes';
 
 import { type APIServerConfig, AuthStrategy } from '../config';
 
 import type { BackendType } from './types';
-<<<<<<< HEAD
-=======
-import { ipcMain } from 'electron';
 import type { RepeatMode } from '@/types/datahost-get-state';
->>>>>>> 0cbf7a51522a04ba085e8a3dfdf057c89ddb00db
+import { cors } from 'hono/cors';
 
 export const backend = createBackend<BackendType, APIServerConfig>({
   async start(ctx) {
@@ -97,21 +94,6 @@ export const backend = createBackend<BackendType, APIServerConfig>({
       () => this.currentRepeatMode,
     );
     registerAuth(this.app, ctx);
-
-<<<<<<< HEAD
-    if (config.websocket) ipcMain.once("ytmd:player-api-loaded",()=> {
-      ctx.window.webContents.send('ytmd:setup-repeat-changed-listener');
-      ctx.window.webContents.send('ytmd:setup-volume-changed-listener');
-
-      registerWebsocket(ctx)
-=======
-    if (config.websocket) ipcMain.once("ytmd:player-api-loaded", () => {
-      ctx.window.webContents.send("ytmd:setup-repeat-changed-listener")
-      ctx.window.webContents.send("ytmd:setup-volume-changed-listener")
-
-      registerWebsocket(ctx);
->>>>>>> 0cbf7a51522a04ba085e8a3dfdf057c89ddb00db
-    })
 
     // swagger
     this.app.openAPIRegistry.registerComponent(
