@@ -173,7 +173,24 @@ const routes = {
       },
     },
   }),
-
+  getShuffleState: createRoute({
+    method: 'get',
+    path: `/api/${API_VERSION}/shuffle`,
+    summary: 'get shuffle state',
+    description: 'Get the current shuffle state',
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: z.object({
+              state: z.boolean().nullable(),
+            }),
+          },
+        },
+      },
+    },
+  }),
   shuffle: createRoute({
     method: 'post',
     path: `/api/${API_VERSION}/shuffle`,
@@ -242,6 +259,24 @@ const routes = {
     responses: {
       204: {
         description: 'Success',
+      },
+    },
+  }),
+  getVolumeState: createRoute({
+    method: 'get',
+    path: `/api/${API_VERSION}/volume`,
+    summary: 'get volume state',
+    description: 'Get the current volume state of the player',
+    responses: {
+      200: {
+        description: 'Success',
+        content: {
+          'application/json': {
+            schema: z.object({
+              state: z.number(),
+            }),
+          },
+        },
       },
     },
   }),
@@ -496,6 +531,7 @@ export const register = (
   { window }: BackendContext<APIServerConfig>,
   songInfoGetter: () => SongInfo | undefined,
   repeatModeGetter: () => RepeatMode | undefined,
+  volumeGetter: () => number | undefined,
 ) => {
   const controller = getSongControls(window);
 
@@ -562,6 +598,25 @@ export const register = (
     ctx.status(204);
     return ctx.body(null);
   });
+
+  app.openapi(routes.getShuffleState, async (ctx) => {
+    const stateResponsePromise = new Promise<boolean>((resolve) => {
+      ipcMain.once(
+        'ytmd:get-shuffle-response',
+        (_, isShuffled: boolean | undefined) => {
+          return resolve(!!isShuffled);
+        },
+      );
+
+      controller.requestShuffleInformation();
+    });
+
+    const isShuffled = await stateResponsePromise;
+
+    ctx.status(200);
+    return ctx.json({ state: isShuffled });
+  });
+
   app.openapi(routes.shuffle, (ctx) => {
     controller.shuffle();
 
@@ -586,6 +641,10 @@ export const register = (
 
     ctx.status(204);
     return ctx.body(null);
+  });
+  app.openapi(routes.getVolumeState, (ctx) => {
+    ctx.status(200);
+    return ctx.json({ state: volumeGetter() ?? 0 });
   });
   app.openapi(routes.setFullscreen, (ctx) => {
     const { state } = ctx.req.valid('json');
@@ -660,8 +719,8 @@ export const register = (
   app.openapi(routes.queueInfo, queueInfo);
 
   app.openapi(routes.addSongToQueue, (ctx) => {
-    const { videoId } = ctx.req.valid('json');
-    controller.addSongToQueue(videoId);
+    const { videoId, insertPosition } = ctx.req.valid('json');
+    controller.addSongToQueue(videoId, insertPosition);
 
     ctx.status(204);
     return ctx.body(null);

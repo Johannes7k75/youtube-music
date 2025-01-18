@@ -62,6 +62,9 @@ export default (win: BrowserWindow) => {
         win.webContents.send('ytmd:seek-by', seconds);
       }
     },
+    requestShuffleInformation: () => {
+      win.webContents.send('ytmd:get-shuffle');
+    },
     shuffle: () => win.webContents.send('ytmd:shuffle'),
     switchRepeat: (n: ArgsType<number> = 1) => {
       const repeat = parseNumberFromArgsType(n);
@@ -97,11 +100,15 @@ export default (win: BrowserWindow) => {
       });
     },
     // Queue
-    addSongToQueue: (videoId: string) => {
+    addSongToQueue: (videoId: string, queueInsertPosition: string) => {
       const videoIdValue = parseStringFromArgsType(videoId);
       if (videoIdValue === null) return;
 
-      win.webContents.send('ytmd:add-to-queue', videoIdValue);
+      win.webContents.send(
+        'ytmd:add-to-queue',
+        videoIdValue,
+        queueInsertPosition,
+      );
     },
     moveSongInQueue: (
       fromIndex: ArgsType<number>,
