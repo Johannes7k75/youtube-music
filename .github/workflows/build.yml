@@ -156,7 +156,7 @@ jobs:
       
       - name: Upload build artifacts if release fails
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.1
         with:
           name: build-artifacts
           path: |
