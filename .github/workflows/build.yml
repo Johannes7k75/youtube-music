@@ -153,6 +153,14 @@ jobs:
             Thanks to all contributors! 🏅
 
             (Note for Windows: `YouTube-Music-Web-Setup-${{ env.VERSION_TAG }}.exe` is an installer, and `YouTube-Music-${{ env.VERSION_TAG }}.exe` is a portable version)
+      
+      - name: Upload build artifacts if release fails
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: |
+            pack/*
 
       - name: Update changelog
         if: ${{ env.VERSION_HASH == '' }}
