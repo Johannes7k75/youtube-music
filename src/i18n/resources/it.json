@@ -160,10 +160,10 @@
               "theme": {
                 "dialog": {
                   "button": {
-                    "cancel": "Cancella",
+                    "cancel": "Annulla",
                     "remove": "Rimuovi"
                   },
-                  "remove-theme": "Sicuro di voler rimuovere il tema personalizzato?",
+                  "remove-theme": "Sei sicuro di voler rimuovere il tema personalizzato?",
                   "remove-theme-message": "Questo rimuoverà il tema personalizzato"
                 },
                 "label": "Tema",
@@ -495,7 +495,7 @@
       "description": "Aggiunge un equalizzatore al player",
       "menu": {
         "presets": {
-          "label": "Presets",
+          "label": "Preset",
           "list": {
             "bass-booster": "Booster dei bassi"
           }
@@ -683,6 +683,7 @@
         "listenbrainz": {
           "token": "Inserire il token utente per ListenBrainz"
         },
+        "scrobble-alternative-title": "Usa titoli alternativi",
         "scrobble-other-media": "Scrobble altri media"
       },
       "name": "Scrobbler",
@@ -733,8 +734,8 @@
     "synced-lyrics": {
       "description": "Fornisce testi sincronizzati alle canzoni, utilizzando provider come LRClib.",
       "errors": {
-        "fetch": "⚠️ - Si è verificato un errore nel recuperare il testo. Per favore riprova più tardi.",
-        "not-found": "⚠️ - Nessun testo trovato per questa canzone."
+        "fetch": "⚠️ \tSi è verificato un errore nel recuperare il testo.\n\tPer favore riprova più tardi.",
+        "not-found": "⚠️ Nessun testo trovato per questa canzone."
       },
       "menu": {
         "default-text-string": {
@@ -765,6 +766,10 @@
         "precise-timing": {
           "label": "Rendi i testi perfettamente sincronizzati",
           "tooltip": "Calcola al millisecondo la visualizzazione della riga successiva (può avere un piccolo impatto sulle prestazioni)"
+        },
+        "romanization": {
+          "label": "Testi in caratteri occidentali",
+          "tooltip": "Qualora il testo fosse scritto in una lingua non occidentale, prova a visualizzarlo in caratteri latini."
         },
         "show-lyrics-even-if-inexact": {
           "label": "Mostra le lyric anche se incorrette",
@@ -797,6 +802,10 @@
     "tuna-obs": {
       "description": "Integrazione con il plugin OBS Tuna",
       "name": "Tuna OBS"
+    },
+    "unobtrusive-player": {
+      "description": "Evita che il player si apra automaticamente durante la riproduzione di un brano",
+      "name": "Player Discreto"
     },
     "video-toggle": {
       "description": "Aggiunge un pulsante per passare dalla modalità Video a quella Brano. Può anche rimuovere l'intera scheda Brano/Video",
