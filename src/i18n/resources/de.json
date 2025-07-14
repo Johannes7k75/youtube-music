@@ -333,6 +333,30 @@
       "description": "Kompressor auf Audio anwenden (senkt die Lautstärke der lautesten Teile des Signals und hebt die Lautstärke der leisesten Teile an)",
       "name": "Audio-Komprimierer"
     },
+    "auth-proxy-adapter": {
+      "description": "Unterstützung für Proxy-Authentifizierungsdienste",
+      "menu": {
+        "disable": "Proxy-Adapter deaktivieren",
+        "enable": "Proxy-Adapter aktivieren",
+        "hostname": {
+          "label": "Hostname"
+        },
+        "port": {
+          "label": "Port"
+        }
+      },
+      "name": "Authentifizierungs-Proxyadapter",
+      "prompt": {
+        "hostname": {
+          "label": "Hostnamen eingeben für lokalen Proxy-Server (Neustart erforderlich):",
+          "title": "Proxy Hostname"
+        },
+        "port": {
+          "label": "Geben Sie den Port für den lokalen Proxyserver ein (Neustart erforderlich):",
+          "title": "Proxy Port"
+        }
+      }
+    },
     "blur-nav-bar": {
       "description": "Macht Navigationsleiste durchsichtig und unscharf",
       "name": "Verschwommene Navigationsleiste"
@@ -357,6 +381,11 @@
       },
       "templates": {
         "title": "Untertitelwähler öffnen"
+      },
+      "toast": {
+        "caption-changed": "Untertitel gewechselt zu {{language}}",
+        "caption-disabled": "Untertitel deaktiviert",
+        "no-captions": "Keine Untertitel für dieses Lied verfügbar"
       }
     },
     "compact-sidebar": {
@@ -523,7 +552,7 @@
       "menu": {
         "romanized-lyrics": "Romanisierte Songtexte"
       },
-      "name": "Liedtexte von Genius",
+      "name": "Songtexte von Genius",
       "renderer": {
         "fetched-lyrics": "Liedtexte für Genius abgerufen"
       }
@@ -576,7 +605,15 @@
     },
     "navigation": {
       "description": "Vorwärts/Zurück Navigationspfeile direkt in die Oberfläche integriert - wie in deinem geliebten Browser",
-      "name": "Navigation"
+      "name": "Navigation",
+      "templates": {
+        "back": {
+          "title": "Zur vorherigen Seite gehen"
+        },
+        "forward": {
+          "title": "Zur nächsten Seite gehen"
+        }
+      }
     },
     "no-google-login": {
       "description": "Googles Anmelden-Knöpfe und -Links von der Oberfläche entfernen",
@@ -599,6 +636,10 @@
         "unpause-notification": "Benachrichtigungen beim Pausieren anzeigen"
       },
       "name": "Benachrichtigungen"
+    },
+    "performance-improvement": {
+      "description": "Leistung durch Aktivieren experimenteller Skripte verbessern",
+      "name": "Leistungs Verbesserung [Beta]"
     },
     "picture-in-picture": {
       "description": "Erlaubt die App in den Bild-im-Bild-Modus zu wechseln",
@@ -664,7 +705,12 @@
         }
       },
       "description": "Erlaubt die Videoqualität über einen Knopf auf dem Video",
-      "name": "Videoqualitätsänderer"
+      "name": "Videoqualitätsänderer",
+      "renderer": {
+        "quality-settings-button": {
+          "label": "Videoqualität ändern"
+        }
+      }
     },
     "scrobbler": {
       "description": "Scrobbling-Unterstützung aktivieren (z.B. für last.fm, Listenbrainz)",
@@ -773,7 +819,7 @@
           "tooltip": "Wenn der Liedtext in einer anderen Schrift ist, zeige nach Möglichkeit eine Version in lateinischer Schrift an."
         },
         "show-lyrics-even-if-inexact": {
-          "label": "Zeige die Liedtexte, auch wenn sie ungenau sind.",
+          "label": "Songtext anzeigen, auch wenn er ungenau ist",
           "tooltip": "Die Erweiterung sucht mit anderen Suchparameter nochmals, wenn der Song nicht gefunden wurde.\nEs kann sein, dass das Ergebnis von der zweiten Anfrage nicht genau ist."
         },
         "show-time-codes": {
@@ -788,7 +834,7 @@
       },
       "warnings": {
         "duration-mismatch": "⚠️ - Es kann sein, dass die Synchronization nicht stimmt, da die Songdauer nicht übereinstimmt.",
-        "inexact": "⚠️ - Es ist Möglich, dass der Songtext für diesen Song nicht übereinstimmt.",
+        "inexact": "⚠️ - Der Songtext stimmt möglicherweise nicht überein",
         "instrumental": "⚠️ - Das ist ein instrumentales Lied"
       }
     },
@@ -831,7 +877,8 @@
       },
       "name": "Videoumschalter",
       "templates": {
-        "button": "Lied"
+        "button-song": "Lied",
+        "button-video": "Video"
       }
     },
     "visualizer": {
